@@ -6,7 +6,7 @@
 
 Server::Server(int port, int typeNet, int typeServer):_port(port), _typeNet(typeNet), _typeServer(typeServer) {
 	if ((this->_socket = socket(typeNet, typeServer, 0) < 0)){
-		throw SocketException();
+		throw ServerException("init socket");
 	}
 	memset((char *)&this->_tcpServer, 0, sizeof(_tcpServer));
 	this->_tcpServer.sin_port = htons(_port);
@@ -15,24 +15,24 @@ Server::Server(int port, int typeNet, int typeServer):_port(port), _typeNet(type
 
 	if (bind(this->_socket, (struct sockaddr*)&this->_tcpServer, sizeof (_tcpServer)) < 0) {
 		std::cerr << errno << std::endl;
-		throw BindPortException();
+		throw ServerException("bind socket");
 	}
 }
 
 
 Server::Server(const Server &obj):_port(obj._port), _typeNet(obj._typeNet), _typeServer(obj._typeServer) {
 	if (this == &obj){
-		throw std::runtime_error("Error copy constructor");
+		throw ServerException("copy constructor is not available(address)");
 	}
 
 }
 
 void Server::startListen() {
 	if (listen(this->_socket, SOMAXCONN) < 0) {
-		throw SocketException();
+		throw ServerException("create listening");
 	}
 	if ((this->_socketClient = accept(this->_socket, nullptr, nullptr)) < 0) {
-		throw SocketException();
+		throw ServerException("create scoket client");
 	}
 }
 
@@ -41,20 +41,16 @@ Server::~Server() {
 	close(this->_socket);
 }
 
-Server::SocketException(){
-	this->_msg = "Exception Socket: error is unknown";
+Server::ServerException(){
+	this->_msg = "Exception Server: error is unknown";
 }
 
-Server::SocketException(std::string msg){
-	this->_msg = "Exception Socket: " + msg;
+Server::ServerException(std::string msg){
+	this->_msg = "Exception Server: " + msg;
 }
 
-const char *Server::SocketException::what() const throw() {
+const char *Server::ServerException::what() const throw() {
 	return this->_msg.c_str();
-}
-
-const char *Server::BindPortException::what() const throw() {
-	return "Failed to bind to port";
 }
 
 void Server::serverWait() {
@@ -91,5 +87,5 @@ void Server::serverWait() {
 /*
 **	server must be singletone?
 **	test with struct addrinfo* addr; + struct addrinfo hints;
-**	copy exception from socket to bind
+**	
 */
