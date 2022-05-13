@@ -41,6 +41,10 @@ Server::~Server() {
 	close(this->_socket);
 }
 
+Server::SocketException(){
+	this->_msg = "Exception Socket: error is unknown";
+}
+
 Server::SocketException(std::string msg){
 	this->_msg = "Exception Socket: " + msg;
 }
