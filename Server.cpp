@@ -41,8 +41,12 @@ Server::~Server() {
 	close(this->_socket);
 }
 
+Server::SocketException(std::string msg){
+	this->_msg = "Exception Socket: " + msg;
+}
+
 const char *Server::SocketException::what() const throw() {
-	return "Socket init error";
+	return this->_msg.c_str();
 }
 
 const char *Server::BindPortException::what() const throw() {
@@ -76,3 +80,12 @@ void Server::serverWait() {
 		}
 	}
 }
+
+
+//TODO:
+
+/*
+**	server must be singletone?
+**	test with struct addrinfo* addr; + struct addrinfo hints;
+**	copy exception from socket to bind
+*/
