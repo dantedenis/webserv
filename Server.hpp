@@ -31,16 +31,14 @@ public:
 	void startListen();
 	void serverWait();
 
-	class SocketException: public std::exception {
+	class ServerException: public std::exception {
+	private:
+		std::string	_msg;
 	public:
+		ServerException();
+		ServerException(std::string);
 		virtual const char *what() const throw();
 	};
-
-	class BindPortException: public std::exception {
-	public:
-		virtual const char *what() const throw();
-	};
-
 };
 
 
